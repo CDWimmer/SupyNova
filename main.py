@@ -65,20 +65,20 @@ def deposition(t, vars):
 
 # Luminosity sub-functions:
 
-def l_nickel56(t, vars):
+def l_nickel56(z, t, vars):
     # Arnett Eq 31:
     # MATLAB XXXXXXXXXX
-    res = deposition(t, vars) * 2 * t * np.e ** ((-t * ts_nagy(t, vars) / tau_56ni) + (t ** 2))
+    res = deposition(z, vars) * 2 * z * np.e ** ((-z * ts_nagy(t, vars) / tau_56ni) + (z ** 2))
     return res
 
 
-def l_cobalt56(t, vars):
+def l_cobalt56(z, t, vars):
 
-    l_cobalt = (0.966 * deposition(t, vars) + 0.034) * 2 * t * (np.e ** (-t * ts_nagy(t, vars) / tau_56co) - np.e ** (-t * ts_nagy(t, vars) / tau_56ni)) / (1 - (tau_56ni / tau_56co) * np.e ** (t ** 2))
+    l_cobalt = (0.966 * deposition(t, vars) + 0.034) * 2 * z * (np.e ** (-z * ts_nagy(t, vars) / tau_56co) - np.e ** (-z * ts_nagy(t, vars) / tau_56ni)) / (1 - (tau_56ni / tau_56co) * np.e ** (z ** 2))
     return l_cobalt
 
 
-def luminosity(t, M_ej, V_ej, preval, ni56_multiplier):
+def luminosity_radiation(t, M_ej, V_ej, some_const, ni56_multiplier):
     vars = {"M_ej": M_ej,
             "V_ej": V_ej,
             #"preval": preval,
@@ -87,22 +87,50 @@ def luminosity(t, M_ej, V_ej, preval, ni56_multiplier):
     integral1 = integrate.quad(l_nickel56,
                                a=0.000001,
                                b=t / ts_nagy(t, vars),
-                               args=vars)[0]
+                               args=(t, vars))[0]
     integral2 = integrate.quad(l_cobalt56,
                                a=0.000001,
                                b=t / ts_nagy(t, vars),
-                               args=vars)[0]
+                               args=(t, vars))[0]
+    print(val1, "*", some_const, "*", vars["M_56Ni"], "*", "(", integral1, "+", integral2, ")")
+    res = val1 * some_const * vars["M_56Ni"] * (integral1 + integral2)
+    print("res:", res)
+    return np.log10(res)
 
-    res = np.log10(
-        val1 * preval * vars["M_56Ni"] * (integral1 + integral2)
-    )
-    return res
 
-y = []
-for i in range(3000):
-    print(i)
-    y.append(luminosity(i, M_ej=15 * M_sun, V_ej=1e9, preval=1e25, ni56_multiplier=0.01))
+def make_curve(times, M_ej, V_ej, some_const, ni56_multiplier):
+    y = []
+    for t in times:
+        print("Working on day", t)
+        y.append(luminosity_radiation(t, M_ej=M_ej * M_sun, V_ej=V_ej, some_const=some_const, ni56_multiplier=ni56_multiplier))
+        return y
 
-plt.plot(y)
-plt.show()
 
+if __name__ == "__main__":
+
+    phase, log_lum, uncert = np.loadtxt("../data/1998bw_bolom.txt", unpack=True)
+    phase_start = abs(phase[0])
+    time = [t + phase_start for t in phase]
+    time[0] = 0.000001  # things go weird starting at 0
+
+
+
+
+    # eval and fit:
+
+    lcmodel = Model(make_curve)
+    print('parameter names: {}'.format(lcmodel.param_names))
+    print('independent variables: {}'.format(lcmodel.independent_vars))
+    # Guess some initial values:     15 Msun,      1e9 cm/s         ????                   0.1%
+    params = lcmodel.make_params(M_ej=15 * M_sun, V_ej=1e9, some_const=1e25, ni56_multiplier=0.001)
+    y_eval = lcmodel.eval(params=params, times=time)
+    print(y_eval)
+    plt.plot(time, y_eval, 'r-', label='best fit')
+    plt.ylabel(r"log$_{10}$ ergs s$^{-1}$")
+    plt.xlabel("time (days)")
+    plt.show()
+    result = lcmodel.fit(log_lum, params, times=time, nan_policy='omit')
+    plt.plot(time, result.best_fit, 'r-', label='best fit')
+    plt.ylabel(r"log$_{10}$ ergs s$^{-1}$")
+    plt.xlabel("time (days)")
+    plt.show()
