@@ -17,8 +17,8 @@ tau_56ni = 6.077 * day / np.log(2)  # decay time nickel 56
 tau_56co = 77.27 * day / np.log(2)  # decay time cobalt 56
 
 
-
 # Set up timescale parameter function
+
 NAGY_KAPPA15 = "../data/15M_sun.csv"
 NAGY_KAPPA30 = "../data/30M_sun.csv"
 t_k, kappa_t = np.loadtxt(NAGY_KAPPA15, unpack=True, delimiter=", ")
@@ -30,14 +30,16 @@ k_inter = interp1d(t_k, kappa_t)  # linear interpolation - could try cubic or so
 
 def ts_nagy(t, vars):
     """Diffusion Timescale Parameter function"""
-    E_k = 3 / 10 * vars["M_ej"] * (vars["V_ej"] ** 2)
+    E_k = (3 / 10) * (vars["M_ej"]) * (vars["V_ej"] ** 2)
     if t <= low_t:
         _kappa = kappa_t[0]  # first val
     elif t >= high_t:
         _kappa = kappa_t[-1]  # final val
     else:
         _kappa = k_inter(t)
-    return 1.05 / np.sqrt(beta * c) * np.sqrt(_kappa) * vars["M_ej"] ** (3 / 4) * E_k ** (-1 / 4)
+    res = 1.05 / np.sqrt(beta * c) * np.sqrt(_kappa) * vars["M_ej"] ** (3 / 4) * E_k ** (-1 / 4)
+    print("kappa:", _kappa, "\ntau_m", res)
+    return res
 
 
 # Deposition function/s:
@@ -83,10 +85,11 @@ def luminosity_radiation(t, M_ej, V_ej, some_const, ni56_multiplier):
             "V_ej": V_ej,
             #"preval": preval,
             "M_56Ni": M_ej * ni56_multiplier}
-    val1 = np.e ** (-(t / ts_nagy(t, vars)) ** 2)  # common to both functions
+    val1 = np.e ** (-(t / ts_nagy(t, vars)) ** 2)  # value common to both functions
+    # integrate
     integral1 = integrate.quad(l_nickel56,
-                               a=0.000001,
-                               b=t / ts_nagy(t, vars),
+                               a=0.000001,  # minimum
+                               b=t / ts_nagy(t, vars),  # maximum = t/tau_m
                                args=(t, vars))[0]
     integral2 = integrate.quad(l_cobalt56,
                                a=0.000001,
@@ -102,7 +105,9 @@ def make_curve(times, M_ej, V_ej, some_const, ni56_multiplier):
     y = []
     for t in times:
         print("Working on day", t)
-        y.append(luminosity_radiation(t, M_ej=M_ej * M_sun, V_ej=V_ej, some_const=some_const, ni56_multiplier=ni56_multiplier))
+        y.append(luminosity_radiation(
+            t, M_ej=M_ej * M_sun, V_ej=V_ej, some_const=some_const, ni56_multiplier=ni56_multiplier)
+        )
         return y
 
 
@@ -112,9 +117,6 @@ if __name__ == "__main__":
     phase_start = abs(phase[0])
     time = [t + phase_start for t in phase]
     time[0] = 0.000001  # things go weird starting at 0
-
-
-
 
     # eval and fit:
 
