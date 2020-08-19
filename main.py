@@ -19,8 +19,7 @@ m_sun = 1.989e33  # g         | solar mass in grams
 c = 2.99792458e10  # cm /s    | speed of light in CGS
 
 
-
-skip_days = 1  # Days to skip at start. Shock breakout dominates initially
+skip_days = 1  # Days to skip at start. (shock breakout makes it inacurate)
 end_day = 200  # day on which to end simulation
 # test values:
 m = 1.45 * m_sun

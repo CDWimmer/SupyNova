@@ -46,19 +46,29 @@ def l_ni(t, m, v_sc, kappa: callable = kappa_const):
         return res
 
     result = np.exp(-pow(x, 2)) * quad(l_ni_integral, 0, x)[0]
-    print(f"x={x:.5f}\ty={y:.3f}\txy={(x * y):.3f}\tlambda(x,y)={result:.3f}")
+    print(f"x={x:.5f}\ty={y:.3f}\txy={(x * y):.3f}\tlambda_ni(x,y)={result:.3f}")
     return x * y, result
 
 
-def l_co(t, m, v_sc, kappa:callable = kappa_const):
+def l_co(t, m, v_sc, kappa: callable = kappa_const):
     """Arnet eqn. 38"""
     tau_m = np.sqrt((2 * kappa(t) * m) / (beta * c * v_sc))
     x = t / tau_m
     y = tau_m / (2 * tau_ni)
-    return 5.36e-3 * np.exp(-0.1548 * x * y)
+    yp = tau_m / (2 * tau_co)
+
+    def l_co_integral(z):
+        # MATLAB: 2*z.*(exp(-2*z*yp) - exp(-2*z*y))/(1 - tau_ni/tau_co).*exp(z.^2)).
+        res = 2 * z * (np.exp(-2 * z * yp) - np.exp(-2 * z * y)) / (1 - tau_ni/tau_co) * np.exp(pow(z, 2))
+        return res
+
+    result = np.exp(-pow(x, 2)) * quad(l_co_integral, 0, x)[0]
+    return result
 
 
 def bolo_l(t, m, v_sc, m_ni, kappa: callable = kappa_const):
+    #print(f"inputs: t={t}, m={m}, v_sc={v_sc}, m_ni={m_ni}")
+
     def deposition():
         tau_m = np.sqrt((2 * kappa(t) * m) / (beta * c * v_sc))
         R = v_sc * tau_m  # is this the correct V and tau?
