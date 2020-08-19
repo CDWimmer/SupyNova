@@ -2,7 +2,10 @@ import numpy as np
 
 
 def smooth_min(a, b, k):
-    """Smoothly joins two values. Shapes to min(a, b) when k>0, max when k<0"""
+    """
+    Smoothly joins two values. Shapes to min(a, b) when k>0, max when k<0
+    Obtained from https://www.iquilezles.org/www/articles/smin/smin.htm
+    """
     a = pow(a, k); b = pow(b, k)
     return pow((a*b)/(a+b), 1/k)
 

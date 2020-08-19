@@ -51,13 +51,14 @@ def l_ni(t, m, v_sc, kappa: callable = kappa_const):
 
 
 def l_co(t, m, v_sc, kappa: callable = kappa_const):
-    """Arnet eqn. 38"""
+    """Arnet eqn. 38 updated with Valenti et al."""
     tau_m = np.sqrt((2 * kappa(t) * m) / (beta * c * v_sc))
     x = t / tau_m
     y = tau_m / (2 * tau_ni)
     yp = tau_m / (2 * tau_co)
 
     def l_co_integral(z):
+        """z is the variable of integration"""
         # MATLAB: 2*z.*(exp(-2*z*yp) - exp(-2*z*y))/(1 - tau_ni/tau_co).*exp(z.^2)).
         res = 2 * z * (np.exp(-2 * z * yp) - np.exp(-2 * z * y)) / (1 - tau_ni/tau_co) * np.exp(pow(z, 2))
         return res
@@ -144,4 +145,4 @@ if __name__ == "__main__":
 
     plt.show()
 
-# todo: Could move tau_m, x, y into bolo_l instead of recalculating in both cobalt and nickel parts.
+

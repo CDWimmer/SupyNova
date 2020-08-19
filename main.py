@@ -1,4 +1,3 @@
-import arnett_small_R
 from arnett_small_R import l_ni, l_co, bolo_l, kappa_const
 import numpy as np
 from nagy import nagy
