@@ -10,7 +10,10 @@ files = [
     "data/1998bw_bolom.txt",
     "data/2009jf_bolom.txt",
     "data/2011dh_bolom.txt",
-    "data/2011fe_bolom.txt"
+    "data/2011fe_bolom.txt",
+    "data/1994l_nature.txt",
+    "data/2002ap_nature.txt",
+    "data/2006aj_nature.txt",
 ]
 
 root = tk.Tk()

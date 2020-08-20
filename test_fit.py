@@ -22,7 +22,7 @@ def fit_me(times: Iterable, m, v_sc, m_ni, shift):
 
 
 data_skip = 1
-phase, log_lum, uncert = loadtxt("data/2011fe_bolom.txt", unpack=True)
+phase, log_lum, uncert = loadtxt("data/2006aj_nature.txt", unpack=True)
 
 time = array([(t + abs(phase[0]))*day2sec for t in phase])[data_skip:]
 log_lum = log_lum[data_skip:]
@@ -37,7 +37,7 @@ print('independent variables: {}'.format(lc_model.independent_vars))
 # params = lc_model.make_params(m=6 * m_sun, v_sc=1e9, m_ni=0.7 * m_sun, shift=500)
 params = Parameters()
 params.add(name="m", value=6*m_sun, min=0.75*m_sun, max=20*m_sun)
-params.add(name="v_sc", value=1e9, min=1e8, max=20e9)
+params.add(name="v_sc", value=5e9, min=1e8, max=20e9)
 params.add(name="m_ni", value=0.7*m_sun, min=0.1*m_sun, max=2*m_sun)
 params.add(name="shift", value=500, min=0, max=3*day2sec)
 
@@ -68,4 +68,4 @@ else:
     plt.show()
 
 
-# Do a finer plot with the fitted parameters (e.g. more and evenly-spaced timesteps:
+# todo: Do a finer plot with the fitted parameters (e.g. more and evenly-spaced timesteps:
