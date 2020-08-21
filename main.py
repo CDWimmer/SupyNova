@@ -2,6 +2,8 @@ from arnett_small_R import l_ni, l_co, bolo_l, kappa_const
 import numpy as np
 from nagy import nagy
 from matplotlib import pyplot as plt
+import numpy as np
+from matplotlib.ticker import ScalarFormatter
 
 # constants
 tau_ni = 7.605e5  # s | nickel-56 decay time
@@ -39,7 +41,7 @@ for t in times:
     lni_res.append(out[1])
     lco_res.append(l_co(t, m=m, v_sc=v_sc))
 for t in times:
-    lum_res.append(bolo_l(t, m=m, v_sc=v_sc, m_ni=0.7))
+    lum_res.append(bolo_l(t, m=m, v_sc=v_sc, m_ni=m_ni))
 
 # variable kappa
 lni_res_var = []
@@ -53,12 +55,12 @@ for t in times:
     lni_res_var.append(out[1])
     lco_res_var.append(l_co(t, m=m, v_sc=v_sc, kappa=nagy.kappa_nagy))
 for t in times:
-    lum_res_var.append(bolo_l(t, m=m, v_sc=v_sc, m_ni=0.7, kappa=nagy.kappa_nagy))
+    lum_res_var.append(bolo_l(t, m=m, v_sc=v_sc, m_ni=m_ni, kappa=nagy.kappa_nagy))
 
 # plotting
 print(f"Using test values of m=1.45*m_sun g, v_sc=1.2e9 cm/s ")
 fig, ax = plt.subplots(1, 2)
-fig.set_size_inches(12, 6.4)
+fig.set_size_inches(10, 5.4)
 
 ax[0].loglog(times / day2sec, lni_res, label=fr"$\Lambda_{{ni}}$ Constant kappa ($\kappa = {kappa_const(0)}$)")
 ax[0].loglog(times / day2sec, lni_res_var, label=r"$\Lambda_{{ni}}$ Variable kappa")
@@ -76,4 +78,11 @@ ax[1].set_ylabel(r"Luminosity (ergs s$^{-1}$)")
 
 ax[1].legend()
 
+for axis in [ax[0].xaxis, ax[1].xaxis,]:
+    formatter = ScalarFormatter()
+    formatter.set_scientific(False)
+    axis.set_major_formatter(formatter)
+
+plt.tight_layout()
+plt.savefig("demo.png")
 plt.show()
