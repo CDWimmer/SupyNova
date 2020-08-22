@@ -1,5 +1,5 @@
 import numpy as np
-
+from matplotlib.ticker import ScalarFormatter
 
 def smooth_min(a, b, k):
     """
@@ -102,6 +102,9 @@ if __name__ == "__main__":
     ax.set_ylim(-0.1, 0.9)
     ax.set_xlabel("time (days)")
     ax.set_ylabel("kappa")
+    formatter = ScalarFormatter()
+    formatter.set_scientific(False)
+    ax.xaxis.set_major_formatter(formatter)
     fig.savefig("nagy_func.png")
     plt.show()
 
