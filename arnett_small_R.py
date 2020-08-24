@@ -72,7 +72,7 @@ def l_co(t, m, v_sc, kappa: callable = kappa_const):
     return result
 
 
-def bolo_l(t, m: np.longdouble, v_sc: np.longdouble, m_ni: np.longdouble, kappa: callable = kappa_const):
+def bolo_l(t, m, v_sc, m_ni, kappa: callable = kappa_const):
     #print(f"inputs: t={t}, m={m}, v_sc={v_sc}, m_ni={m_ni}")
 
     def deposition():  # checked
