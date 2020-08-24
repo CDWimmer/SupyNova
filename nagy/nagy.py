@@ -101,10 +101,11 @@ if __name__ == "__main__":
     ax.set_xlim(1, 400)
     ax.set_ylim(-0.1, 0.9)
     ax.set_xlabel("time (days)")
-    ax.set_ylabel("kappa")
+    ax.set_ylabel(r"$\kappa\left(t\right)$")
     formatter = ScalarFormatter()
     formatter.set_scientific(False)
     ax.xaxis.set_major_formatter(formatter)
+    plt.tight_layout()
     fig.savefig("nagy_func.png")
     plt.show()
 

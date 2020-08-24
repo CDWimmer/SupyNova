@@ -42,11 +42,13 @@ def l_ni(t, m, v_sc, kappa: callable = kappa_const):
 
     def l_ni_integral(z):
         """z is the variable of integration"""
-        res = np.exp((-2 * z * y) + pow(z, 2)) * 2 * z
+        print("NI", "  x=", x, "  y=", y, "  z=", z, "  m=", m, "  v_sc=", v_sc)
+        res = np.exp((-2 * z * y) + np.power(z, 2)) * 2 * z
+        print(f"l_ni_integral = {res: .3e}")
         return res
 
-    result = np.exp(-pow(x, 2)) * quad(l_ni_integral, 0, x)[0]
-    print(f"x={x:.5f}\ty={y:.3f}\txy={(x * y):.3f}\tlambda_ni(x,y)={result:.3f}")
+    result = np.exp(-np.power(x, 2)) * quad(l_ni_integral, 0, x)[0]
+    #print(f"x={x:.5f}\ty={y:.3f}\txy={(x * y):.3f}\tlambda_ni(x,y)={result:.3f}")
     return x * y, result
 
 
@@ -59,18 +61,21 @@ def l_co(t, m, v_sc, kappa: callable = kappa_const):
 
     def l_co_integral(z):
         """z is the variable of integration"""
+        print("CO", "x=", x, "y=", y, "  z=", z)
         # MATLAB: 2*z.*(exp(-2*z*yp) - exp(-2*z*y))/(1 - tau_ni/tau_co).*exp(z.^2)).
-        res = 2 * z * (np.exp(-2 * z * yp) - np.exp(-2 * z * y)) / (1 - tau_ni/tau_co) * np.exp(pow(z, 2))
+        res = 2 * z * (np.exp(-2 * z * yp) - np.exp(-2 * z * y)) / (1 - tau_ni/tau_co) * np.exp(np.power(z, 2))
+        print(f"lambda_co_integral={res:.3f}")
         return res
 
-    result = np.exp(-pow(x, 2)) * quad(l_co_integral, 0, x)[0]
+    result = np.exp(-np.power(x, 2)) * quad(l_co_integral, 0, x)[0]
+    # print(f"lambda_co(x,y)={result:.3f}")
     return result
 
 
-def bolo_l(t, m, v_sc, m_ni, kappa: callable = kappa_const):
+def bolo_l(t, m: np.longdouble, v_sc: np.longdouble, m_ni: np.longdouble, kappa: callable = kappa_const):
     #print(f"inputs: t={t}, m={m}, v_sc={v_sc}, m_ni={m_ni}")
 
-    def deposition():
+    def deposition():  # checked
         tau_m = np.sqrt((2 * kappa(t) * m) / (beta * c * v_sc))
         R = v_sc * tau_m  # is this the correct V and tau?
         rho = m / (4 / 3 * np.pi * R ** 3)
@@ -79,7 +84,9 @@ def bolo_l(t, m, v_sc, m_ni, kappa: callable = kappa_const):
         D = G * (1 + 2 * G * (1 - G) * (1 - 0.75 * G))
         return D
     # evaluate (D_ni * e_ni * m_ni * lambda_ni) + (D_co * e_co * m_ni * lambda_co)
-    return (deposition() * e_ni * m_ni * l_ni(t, m, v_sc, kappa=kappa)[1]) + ((0.966 * deposition() + 0.034) * e_co *m_ni * l_co(t, m, v_sc, kappa=kappa))
+    res = (deposition() * e_ni * m_ni * l_ni(t, m, v_sc, kappa=kappa)[1]) + ((0.966 * deposition() + 0.034) * e_co *m_ni * l_co(t, m, v_sc, kappa=kappa))
+    # print(f"L = {res:.3e}")
+    return res
 
 
 if __name__ == "__main__":
@@ -92,7 +99,7 @@ if __name__ == "__main__":
     v_sc = 1.2e9
     m_ni = 0.7 * m_sun
 
-    times = np.linspace(skip_days * day2sec, end_day * day2sec, 200)
+    times = np.linspace(skip_days * day2sec, end_day * day2sec, 500)
 
     # constant kappa
     lni_res = []
@@ -106,7 +113,7 @@ if __name__ == "__main__":
         lni_res.append(out[1])
         lco_res.append(l_co(t, m=m, v_sc=v_sc))
     for t in times:
-        lum_res.append(bolo_l(t, m=m, v_sc=v_sc, m_ni=0.7))
+        lum_res.append(bolo_l(t, m=m, v_sc=v_sc, m_ni=0.7*m_sun))
 
     # variable kappa
     lni_res_var = []
@@ -120,17 +127,17 @@ if __name__ == "__main__":
         lni_res_var.append(out[1])
         lco_res_var.append(l_co(t, m=m, v_sc=v_sc, kappa=nagy.kappa_nagy))
     for t in times:
-        lum_res_var.append(bolo_l(t, m=m, v_sc=v_sc, m_ni=0.7, kappa=nagy.kappa_nagy))
+        lum_res_var.append(bolo_l(t, m=m, v_sc=v_sc, m_ni=0.7*m_sun, kappa=nagy.kappa_nagy))
 
     # plotting
     print(f"Using test values of m=1.45*m_sun g, v_sc=1.2e9 cm/s ")
     fig, ax = plt.subplots(1, 2)
     fig.set_size_inches(12, 6.4)
 
-    ax[0].loglog(times / day2sec, lni_res, label=fr"$\Lambda_{{ni}}$ Constant kappa ($\kappa = {kappa_const(0)}$)")
-    ax[0].loglog(times / day2sec, lni_res_var, label=r"$\Lambda_{{ni}}$ Variable kappa")
-    ax[0].loglog(times / day2sec, lco_res, label=fr"$\Lambda_{{co}}$ Constant kappa ($\kappa = {kappa_const(0)}$)")
-    ax[0].loglog(times / day2sec, lco_res_var, label=r"$\Lambda_{{co}}$ Variable kappa")
+    ax[0].loglog(times / day2sec, lni_res, '--', label=fr"$\Lambda_{{ni}}$ Constant kappa ($\kappa = {kappa_const(0)}$)")
+    ax[0].loglog(times / day2sec, lni_res_var, '--', label=r"$\Lambda_{{ni}}$ Variable kappa")
+    ax[0].loglog(times / day2sec, lco_res, '--', label=fr"$\Lambda_{{co}}$ Constant kappa ($\kappa = {kappa_const(0)}$)")
+    ax[0].loglog(times / day2sec, lco_res_var, '--', label=r"$\Lambda_{{co}}$ Variable kappa")
     ax[0].set_xlabel(r"time (days)")
     ax[0].set_ylabel(r"$\Lambda \left(x, y\right)$")
 
