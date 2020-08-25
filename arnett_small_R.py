@@ -42,9 +42,9 @@ def l_ni(t, m, v_sc, kappa: callable = kappa_const):
 
     def l_ni_integral(z):
         """z is the variable of integration"""
-        print("NI", "  x=", x, "  y=", y, "  z=", z, "  m=", m, "  v_sc=", v_sc)
+        #print("NI", "  x=", x, "  y=", y, "  z=", z, "  m=", m, "  v_sc=", v_sc)
         res = np.exp((-2 * z * y) + np.power(z, 2)) * 2 * z
-        print(f"l_ni_integral = {res: .3e}")
+        #print(f"l_ni_integral = {res: .3e}")
         return res
 
     result = np.exp(-np.power(x, 2)) * quad(l_ni_integral, 0, x)[0]
@@ -61,10 +61,10 @@ def l_co(t, m, v_sc, kappa: callable = kappa_const):
 
     def l_co_integral(z):
         """z is the variable of integration"""
-        print("CO", "x=", x, "y=", y, "  z=", z)
+        #print("CO", "x=", x, "y=", y, "  z=", z)
         # MATLAB: 2*z.*(exp(-2*z*yp) - exp(-2*z*y))/(1 - tau_ni/tau_co).*exp(z.^2)).
         res = 2 * z * (np.exp(-2 * z * yp) - np.exp(-2 * z * y)) / (1 - tau_ni/tau_co) * np.exp(np.power(z, 2))
-        print(f"lambda_co_integral={res:.3f}")
+        #print(f"lambda_co_integral={res:.3f}")
         return res
 
     result = np.exp(-np.power(x, 2)) * quad(l_co_integral, 0, x)[0]

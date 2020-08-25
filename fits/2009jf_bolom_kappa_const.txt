@@ -1,0 +1,9 @@
+kappa function: kappa_const
+Data skip: 2
+M = 4.61641 solar masses
+v_sc = 0.19754 *10^9 cm/s
+M_Ni = 0.92328 solar masses
+shift = 2.56546 days
+chi squared = 0.878595197234325
+reduced chi = 0.01689606148527548
+sqrt(2.53M_Ni/M) = 0.7113367697511496
