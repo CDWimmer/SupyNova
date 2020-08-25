@@ -47,14 +47,14 @@ def part3(t):
             if i <= c:
                 res.append(part4(i))
             else:
-                res.append(a + b * np.sqrt(abs(i - c)) / (d * i) + (n * np.e ** (m * i + z)))
+                res.append(a + b * np.sqrt(abs(i - c)) / (d * i) + (n * np.exp(m * i + z)))
         print(res)
         return res
     else:  # t is number
         if t <= c:
             return part4(t)
         else:
-            return a + b * np.sqrt(abs(t - c)) / (d * t) + (n * np.e ** (m * t + z))
+            return a + b * np.sqrt(abs(t - c)) / (d * t) + (n * np.exp(m * t + z))
 
 
 def part4(t):
