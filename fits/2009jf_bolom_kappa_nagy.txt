@@ -1,9 +1,9 @@
 kappa function: kappa_nagy
 Data skip: 3
-M = 4.68183 solar masses
-v_sc = 0.29682 *10^9 cm/s
-M_Ni = 0.93637 solar masses
-shift = 2.73477 days
-chi squared = 0.8734436615847964
-reduced chi = 0.017126346305584243
+M = 4.68159 solar masses
+v_sc = 0.29685 *10^9 cm/s
+M_Ni = 0.93632 solar masses
+shift = 2.73429 days
+chi squared = 0.8734436623638537
+reduced chi = 0.017126346320859877
 sqrt(2.53M_Ni/M) = 0.7113367697511496

@@ -50,8 +50,8 @@ def fit(data: str, data_skip: int, kappa_function: callable,
     params.add(name="v_sc", value=vsc_init, min=vsc_min, max=vsc_max)
     params.add(name="mni_minus_m", value=1, vary=True, min=1e-12)
     # params.add(name="m_ni", value=mni_init, min=mni_min, max=mni_max)
-    params.add(name="m_ni", expr='0.2*m + mni_minus_m') # max value of m_ni is 0.2*m
-    params.add(name="shift", value=500, min=1, max=8 * day2sec)
+    params.add(name="m_ni", expr='0.2*m + mni_minus_m')  # max value of m_ni is 0.2*m
+    params.add(name="shift", value=500, min=1, max=15 * day2sec)
     # ======================================== #
 
     # Do a fit:
@@ -120,11 +120,11 @@ def fit(data: str, data_skip: int, kappa_function: callable,
         try:
             with open(f"fits/{data.split('/')[1].split('.')[0]}_{kappa_function.__name__}.txt", 'w') as f:
                 f.write(result_string)
-            plt.savefig(f"fits\\{data.split('/')[1].split('.')[0]}_{kappa_function.__name__}.png")
+            fig.savefig(f"fits\\{data.split('/')[1].split('.')[0]}_{kappa_function.__name__}.png")
         except Exception as e:
             print("Something went wrong when saving!", str(e))
         else:
-            print("Done! Showing plot.")
-        plt.show()
+            print("Done!")  # Showing plot.")
+        # plt.show()
 
 # todo: make this usable from command line?

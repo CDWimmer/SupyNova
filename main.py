@@ -9,18 +9,22 @@ files = [
     "data/2009jf_bolom.txt",
     "data/2011dh_bolom.txt",
     "data/2011fe_bolom.txt",
-    "data/1994l_nature.txt",
-    "data/2002ap_nature.txt",
-    "data/2006aj_nature.txt",
+    #"data/2002ap_nature.txt",
+    #"data/2006aj_nature.txt",
+    "data/1994I_bolom.txt",  # Type Ic
+    "data/1994D_bolom.txt",   # Type Ia
+    "data/1991T_bolom.txt",  # Type Ia
 ]
 
 for file in files:
     m_init = 7*m_sun
     vsc_init = 1e9
+    data_skip = 3
     tries = 0
     while True:
         try:
-            Fitter.fit(file, 3, kappa_function=kappa_nagy, m_init=m_init, vsc_init=vsc_init)
+            Fitter.fit(file, data_skip=data_skip, kappa_function=kappa_nagy,
+                       m_init=m_init, vsc_init=vsc_init, m_max=40*m_sun)
         except OverflowError:  # something went bad
             if tries > 10:
                 print("Giving up...")
@@ -35,4 +39,22 @@ for file in files:
 
 
 for file in files:
-    Fitter.fit(file, 2, kappa_function=kappa_const, m_init=5*m_sun)
+    m_init = 7*m_sun
+    vsc_init = 1e9
+    data_skip = 3
+    tries = 0
+    while True:
+        try:
+            Fitter.fit(file, data_skip=data_skip, kappa_function=kappa_const,
+                       m_init=m_init, vsc_init=vsc_init, m_max=40*m_sun)
+        except OverflowError:  # something went bad
+            if tries > 10:
+                print("Giving up...")
+                break
+            tries += 1
+            print("Something went bad, trying again with randomised initial params")
+            m_init = uniform(0.1*m_sun, 10*m_sun)
+            vsc_init = uniform(0.01e9, 1e9)
+            continue
+        else:  # successful fit, move on to next file
+            break
