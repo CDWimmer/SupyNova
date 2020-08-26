@@ -15,7 +15,7 @@ files = [
     "data/1998bw_bolom.txt",
     "data/2009jf_bolom.txt",
     "data/2011dh_bolom.txt",
-    "data/2011fe_bolom.txt",
+    "data/2011fe_bolom.txt",  # Type Ia
     #"data/2002ap_nature.txt",
     #"data/2006aj_nature.txt",
     "data/1994I_bolom.txt",  # Type Ic
@@ -68,6 +68,8 @@ vsc_input.grid(row=3, column=1)
 data_skip = tk.StringVar()
 data_skip.set(2)
 
+
+
 chosen = tk.StringVar(root)
 chosen.set(files[0])
 
@@ -79,15 +81,23 @@ plot.get_tk_widget().grid(column=0, row=0, sticky=(N, W, E, S))
 phase, log_lum, uncert = np.loadtxt(chosen.get(), unpack=True)
 time = np.array([(t + abs(phase[0])) * day2sec for t in phase])[int(data_skip.get()):]
 log_lum = log_lum[int(data_skip.get()):]
-graph, = ax.plot(time, log_lum, 'bo')
-graph2, = ax.plot([1, 2, 3, 4], [1, 2, 3, 4], 'k--')
-ax.set_xlim(time[0], time[-1] * 1.2)  # set axis limits to be a bit bigger than this initial plot, because idk what to set.
+graph, = ax.plot(time/day2sec, log_lum, 'bo', label="Data")
+graph2, = ax.plot([1, 2, 3, 4], [1, 2, 3, 4], 'k--', label="Calculated LC")
+ax.legend()
+
+# set axis limits to be a bit bigger than this initial plot, because idk what to set.
+ax.set_xlim(-time[1]*2/day2sec, time[-1] * 1.2/day2sec)  # these are very far from good solutions
 ax.set_ylim(log_lum[0] * 0.9, log_lum[-1] * 1.1)
+
 ax.set_xlabel("time (days)")
 ax.set_ylabel(r"log$_{10}$ergs s$^{-1}$")
 fig.suptitle(chosen.get())
 
-tk.Label(picker_frame, font=("Helvetica", 20), text="Show data:").grid(row=1, column=0)
+
+tk.Label(picker_frame, font=("Helvetica", 17), text="Show data:").grid(row=1, column=0)
+tk.Label(picker_frame, font=("Helvetica", 15), text="data skip:").grid(row=1, column=0, sticky=E)
+shift_input = tk.Entry(picker_frame, textvariable=data_skip)
+shift_input.grid(row=1, column=1)
 opt = tk.OptionMenu(picker_frame, chosen, *files)
 opt.config(width=50, font=('Helvetica', 12))
 opt.grid(column=0, row=2, sticky=(W, E))
@@ -111,7 +121,8 @@ def do_plot(*args):
         alert['text'] = f"Error:\n{str(e)}"
     else:
         graph2.set_ydata(res)
-        graph2.set_xdata(times)
+        graph2.set_xdata(times/day2sec)
+        #ax.set_xlim(left=-times[1]/day2sec)
         fig.canvas.draw()
         fig.canvas.flush_events()
 
@@ -121,7 +132,9 @@ def callback(*args):
     time = np.array([(t + abs(phase[0])) * day2sec for t in phase])[int(data_skip.get()):]
     log_lum = log_lum[int(data_skip.get()):]
     graph.set_ydata(log_lum)
-    graph.set_xdata(time)
+    graph.set_xdata(time/day2sec)
+    ax.set_xlim(left=-time[1]*2/day2sec, right=time[-1]*1.2/day2sec)  # this is very far from a good solution
+    ax.set_ylim(log_lum[0] * 0.9, log_lum[-1] * 1.1)  # this is very far from a good solution
     fig.suptitle(chosen.get())
     fig.canvas.draw()
     fig.canvas.flush_events()

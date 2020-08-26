@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.integrate import quad
 from nagy import nagy
-
+# from mpmath import mp
 # constants
 tau_ni = 7.605e5  # s | nickel-56 decay time
 tau_co = 9.822e6  # s | cobalt-56 decay time
