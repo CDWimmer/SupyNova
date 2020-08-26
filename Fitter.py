@@ -10,6 +10,18 @@ day2sec = 86400  # s          | seconds in a day
 m_sun = 1.989e33  # g         | solar mass in grams
 
 
+def _lc_maker(times: Iterable, m, v_sc, m_ni, shift, kappa_func=kappa_const):
+    """
+    Return bolometric luminosity values for a given set of times.
+    Uses the kappa_nagy function for kappa calculation.
+    """
+    time_shifted = [t + shift for t in times]
+    results = []
+    for t in time_shifted:
+        results.append(log10(bolo_l(t, m, v_sc, m_ni, kappa=kappa_func)))
+    return results
+
+
 def fit(data: str, data_skip: int, kappa_function: callable,
         m_min=0.1*m_sun, m_max=30*m_sun, m_init=7*m_sun,
         vsc_min=0.01e9, vsc_max=2e9, vsc_init=1e9,
@@ -22,25 +34,13 @@ def fit(data: str, data_skip: int, kappa_function: callable,
     # kappa_function = kappa_const
     # ======================================== #
 
-    def fit_me(times: Iterable, m, v_sc, m_ni, shift):
-        """
-        Return bolometric luminosity values for a given set of times.
-        Uses the kappa_nagy function for kappa calculation.
-        """
-        time_shifted = [t + shift for t in times]
-        results = []
-        for t in time_shifted:
-            results.append(log10(bolo_l(t, m, v_sc, m_ni, kappa=kappa_function)))
-        return results
-
     # load data file
     phase, log_lum, uncert = loadtxt(data, unpack=True)
 
     time = array([(t + abs(phase[0])) * day2sec for t in phase])[data_skip:]
     log_lum = log_lum[data_skip:]
 
-
-    lc_model = Model(fit_me)
+    lc_model = Model(_lc_maker, kappa_func=kappa_function)
     print('parameter names: {}'.format(lc_model.param_names))
     print('independent variables: {}'.format(lc_model.independent_vars))
 
@@ -64,8 +64,8 @@ def fit(data: str, data_skip: int, kappa_function: callable,
         # print("Showing plot of the data and initial params")
         # print(type(time), type(log_lum))
         # plt.scatter(time/day2sec, log_lum, 'bo', label="data")
-        # plt.plot(time/day2sec, fit_me(time, params["m"].value, params["v_sc"].value, params["m_ni"].value, 500), 'k--',
-        #          label="init params")
+        # plt.plot(time/day2sec, _lc_maker(time, params["m"].value, params["v_sc"].value, params["m_ni"].value, 500),
+        # 'k--', label="init params")
         # plt.legend()
         # plt.show()
     else:  # it didn't crash
@@ -82,18 +82,20 @@ def fit(data: str, data_skip: int, kappa_function: callable,
         red_chi2_result = result.redchi
 
         smooth_times = linspace(time[0], time[-1], len(time) * 3)  # 3 times as many time points, and evenly spaced
-        init_result = fit_me(  # smooth curve of initial guess
+        init_result = _lc_maker(  # smooth curve of initial guess
             smooth_times,
             result.init_values["m"],
             result.init_values["v_sc"],
             result.init_values["m_ni"],
-            result.init_values["shift"])
-        best_result = fit_me(  # smooth curve of best guess
+            result.init_values["shift"],
+            kappa_func=kappa_function)
+        best_result = _lc_maker(  # smooth curve of best guess
             smooth_times,
             m_result,
             v_sc_result,
             m_ni_result,
-            shift_result)
+            shift_result,
+            kappa_func=kappa_function)
 
         fig, ax = plt.subplots(1, 1)
         ax.semilogx(time / day2sec, log_lum, 'bo', label=f"Data for {data.split('/')[1].split('.')[0].split('_')[0]}")
