@@ -5,10 +5,10 @@ from random import uniform
 m_sun = 1.989e33  # g         | solar mass in grams
 
 files = [
-    "data/1998bw_bolom.txt",
-    "data/2009jf_bolom.txt",
-    "data/2011dh_bolom.txt",
-    "data/2011fe_bolom.txt",
+    "data/1998bw_bolom.txt",  # Type Ic
+    "data/2009jf_bolom.txt",  # Type Ib
+    "data/2011dh_bolom.txt",  # Type II
+    "data/2011fe_bolom.txt",  # Type Ia
     #"data/2002ap_nature.txt",
     #"data/2006aj_nature.txt",
     "data/1994I_bolom.txt",  # Type Ic
