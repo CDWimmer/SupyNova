@@ -5,26 +5,21 @@ from random import uniform
 m_sun = 1.989e33  # g         | solar mass in grams
 
 files = [
-    "data/1998bw_bolom.txt",  # Type Ic
-    "data/2009jf_bolom.txt",  # Type Ib
-    "data/2011dh_bolom.txt",  # Type II
+
     "data/2011fe_bolom.txt",  # Type Ia
-    #"data/2002ap_nature.txt",
-    #"data/2006aj_nature.txt",
-    "data/1994I_bolom.txt",  # Type Ic
     "data/1994D_bolom.txt",   # Type Ia
     "data/1991T_bolom.txt",  # Type Ia
 ]
 
 for file in files:
-    m_init = 2*m_sun
-    vsc_init = 0.9e9
-    data_skip = 2
+    m_init = 1.4*m_sun
+    vsc_init = 0.6e9
+    data_skip = 1
     tries = 0
     while True:
         try:
             Fitter.fit(file, data_skip=data_skip, kappa_function=kappa_nagy,
-                       m_init=m_init, vsc_init=vsc_init, m_max=40*m_sun)
+                       m_init=m_init, vsc_init=vsc_init, m_max=2*m_sun)
         except OverflowError:  # something went bad
             if tries > 10:
                 print("Giving up...")

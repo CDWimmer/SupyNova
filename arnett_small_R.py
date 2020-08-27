@@ -31,7 +31,7 @@ c = 2.99792458e10  # cm /s    | speed of light in CGS
 
 def kappa_const(t):
     """placeholder"""
-    return 0.08
+    return 0.1
 
 
 def l_ni(t, m, v_sc, kappa: callable = kappa_const):

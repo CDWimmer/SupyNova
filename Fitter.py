@@ -98,7 +98,7 @@ def fit(data: str, data_skip: int, kappa_function: callable,
             kappa_func=kappa_function)
 
         fig, ax = plt.subplots(1, 1)
-        ax.semilogx(time / day2sec, log_lum, 'bo', label=f"Data for {data.split('/')[1].split('.')[0].split('_')[0]}")
+        ax.plot(time / day2sec, log_lum, 'bo', label=f"Data for {data.split('/')[1].split('.')[0].split('_')[0]}")
         ax.plot(smooth_times / day2sec, init_result, 'k--', label="Initial fit")
         ax.plot(smooth_times / day2sec, best_result, 'r-', label="Best fit")
         ax.set_xlabel("time (days)")
