@@ -14,6 +14,7 @@ files = [
     "data/1994I_bolom.txt",  # Type Ic
     "data/1994D_bolom.txt",   # Type Ia
     "data/1991T_bolom.txt",  # Type Ia
+    "data/1991T-mod_bolom.txt",  # Type Ia - removed very late time
 ]
 
 for file in files:

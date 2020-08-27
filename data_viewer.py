@@ -21,6 +21,7 @@ files = [
     "data/1994I_bolom.txt",  # Type Ic
     "data/1994D_bolom.txt",   # Type Ia
     "data/1991T_bolom.txt",  # Type Ia
+    "data/1991T-mod_bolom.txt",  # Type Ia - removed very late time
 ]
 
 root = tk.Tk()
@@ -113,6 +114,10 @@ def do_plot(*args):
         res = _lc_maker(times, m_sun * float(m_value.get()), float(vsc_value.get()), m_sun * float(mni_value.get()),
                         float(shift_value.get()) * day2sec, kappa_func=kappa_nagy)
         print(res)
+        if res.count(np.inf) > 0 or res.count(np.nan) > 0:
+            alert['text'] = "Result contains some invalid values!\nSee list printed to console."
+        else:
+            alert['text'] = 'Ready.'
     except Warning as w:
         print(str(w))
         alert['text'] = f"Warning:\n{str(w)}"
