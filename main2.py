@@ -9,6 +9,7 @@ files = [
     "data/2011fe_bolom.txt",  # Type Ia
     "data/1994D_bolom.txt",   # Type Ia
     "data/1991T_bolom.txt",  # Type Ia
+    "data/1991T-mod_bolom.txt" # Type Ia - removed very late time
 ]
 
 for file in files:
@@ -34,14 +35,14 @@ for file in files:
 
 
 for file in files:
-    m_init = 7*m_sun
-    vsc_init = 1e9
-    data_skip = 3
+    m_init = 1.4*m_sun
+    vsc_init = 0.6e9
+    data_skip = 1
     tries = 0
     while True:
         try:
             Fitter.fit(file, data_skip=data_skip, kappa_function=kappa_const,
-                       m_init=m_init, vsc_init=vsc_init, m_max=40*m_sun)
+                       m_init=m_init, vsc_init=vsc_init, m_max=2*m_sun)
         except OverflowError:  # something went bad
             if tries > 10:
                 print("Giving up...")

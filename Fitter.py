@@ -50,7 +50,9 @@ def fit(data: str, data_skip: int, kappa_function: callable,
     params.add(name="v_sc", value=vsc_init, min=vsc_min, max=vsc_max)
     params.add(name="mni_minus_m", value=1, vary=True, min=1e-12)
     # params.add(name="m_ni", value=mni_init, min=mni_min, max=mni_max)
-    params.add(name="m_ni", expr='0.2*m + mni_minus_m')  # max value of m_ni is 0.2*m
+    # params.add(name="m_ni", expr='0.5*m + mni_minus_m')  # max value of m_ni is 0.5*m
+    params.add(name="mni_factor", min=0.0001, max=0.5)
+    params.add(name="m_ni", expr='m * mni_factor')
     params.add(name="shift", value=500, min=1, max=15 * day2sec)
     # ======================================== #
 
@@ -99,7 +101,7 @@ def fit(data: str, data_skip: int, kappa_function: callable,
 
         fig, ax = plt.subplots(1, 1)
         ax.plot(time / day2sec, log_lum, 'bo', label=f"Data for {data.split('/')[1].split('.')[0].split('_')[0]}")
-        ax.plot(smooth_times / day2sec, init_result, 'k--', label="Initial fit")
+        # ax.plot(smooth_times / day2sec, init_result, 'k--', label="Initial fit")
         ax.plot(smooth_times / day2sec, best_result, 'r-', label="Best fit")
         ax.set_xlabel("time (days)")
         ax.set_ylabel(r"log$_{10}$ luminosity")

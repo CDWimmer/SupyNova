@@ -42,7 +42,7 @@ for file in files:
 for file in files:
     m_init = 7*m_sun
     vsc_init = 1e9
-    data_skip = 3
+    data_skip = 2
     tries = 0
     while True:
         try:
